@@ -3,6 +3,7 @@ import shutil
 import imutils
 import cv2
 from os import walk
+import numpy as np
 
 
 """"""""""""""" Settings """""""""""""""
@@ -15,7 +16,7 @@ func
 4: salt and pepper noise
 5: rotate 180 degrees (no flipping)
 """
-func = 0
+func = 3
 
 """
 x,y
@@ -69,7 +70,7 @@ def add_gaussian_noise(img):
     
     gaussian = np.random.random((row, col, 1)).astype(np.float32)
     gaussian = np.concatenate((gaussian, gaussian, gaussian), axis = 2)
-    gaussian_img = cv2.addWeighted(img, alpha, strength * gaussian, beta, gamma, dtype=-1)
+    gaussian_img = cv2.addWeighted(np.asarray(img,np.float32), alpha, strength * gaussian, beta, gamma, dtype=-1)
 
     return gaussian_img
 
@@ -144,13 +145,13 @@ for img_name in img_name_list:
                         
                 elif func == 3:
                         print("add Guassian noise function is called\n")
-                        dst = add_gaussian_noise(src, x)
+                        dst = add_gaussian_noise(src)
                         out_img = output_path + "gn_" + img_name
                         cv2.imwrite(out_img, dst)
                         
                 elif func == 4:
                         print("add salt and pepper noise function is called\n")
-                        dst = add_salt_pepper_noise(src, x)
+                        dst = add_salt_pepper_noise(src)
                         out_img = output_path + "spn_" + img_name
                         cv2.imwrite(out_img, dst)
 
@@ -177,14 +178,20 @@ for img_name in img_name_list:
                         text = open(output_path+txt_name, 'r')
                         rot_text = open(output_path+"rot_"+txt_name, 'w')
 
-                        for line in text.read().split("\n")
-                                elems = line.split()
-                                cls_idx = elems[0]
-                                center_x = float(elems[1])
-                                center_y = float(elems[2])
-                                wd = float(elems[3])
-                                ht = float(elems[4])
-                                rot_text.write("{0} {1} {2} {3} {4}".format(cls_idx,str(1-center_x),str(1-center_y),str(wd),str(ht)))
+                        for line in text.read().split("\n"):
+                                try:
+                                        print(line)
+                                        elems = line.split()
+                                        cls_idx = elems[0]
+                                        center_x = float(elems[1])
+                                        center_y = float(elems[2])
+                                        wd = float(elems[3])
+                                        ht = float(elems[4])
+                                        rot_text.write("{0} {1} {2} {3} {4}".format(cls_idx,str(1-center_x),str(1-center_y),str(wd),str(ht)))
+                                        
+                                except IndexError :
+                                        print("\ndone\n")
+                                        
                         text.close()
                         rot_text.close()                       
         
