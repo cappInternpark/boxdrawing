@@ -184,7 +184,7 @@ for img_name in img_name_list:
                                 center_y = float(elems[2])
                                 wd = float(elems[3])
                                 ht = float(elems[4])
-                                rot_text.write("{0} {1} {2} {3} {4}".format("0",str(1-center_x),str(1-center_y),str(wd),str(ht)))
+                                rot_text.write("{0} {1} {2} {3} {4}".format(cls_idx,str(1-center_x),str(1-center_y),str(wd),str(ht)))
                         text.close()
                         rot_text.close()                       
         
