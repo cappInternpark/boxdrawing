@@ -30,9 +30,8 @@ Creates a list of train set and test set in separate ".list" files. They are nam
 In case the original label files are lost, use this code to convert your Label_formal files back to the original label files.
 
 ### 6. augment.py
-Augment your images by adding blur to your images. 
-1. Specify blur type, kernel size (x,y), and percentage out of 100 that you want to blur your original images.
-2. Executing this code will not overwrite the original images but rather create new ones with a prefix added to the original title.
+Augment your images by adding blur or noise to your images. You can also rotate your image by 180 degrees. 
+1. Set parameters for augmentation before use.
 
 ### 7. make_list_general.py
 Create a shuffled list of all ".jpg" files resident in the current directory.
