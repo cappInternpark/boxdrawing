@@ -1,6 +1,7 @@
 import os
 import shutil
 import imutils
+import random
 import cv2
 from os import walk
 import numpy as np
@@ -57,15 +58,17 @@ def add_gaussian_noise(img):
     
     """"""""""""""" Settings """""""""""""""
     """
+    Default values generate data of lightings changed by only a small amount 
+    
     Gaussian distribution parameters
     alpha – weight of the first array elements.
     beta – weight of the second array elements.
     gamma – scalar added to each sum.
     """
-    alpha = 0.5
-    beta = 0.5
-    gamma = 0
-    strength = 0.25
+    alpha = random.uniform(0.8,1)
+    beta = random.uniform(0.8,1)
+    gamma = random.uniform(0.8,1)
+    strength = 0.001
     """"""""""""""" Settings """""""""""""""
     
     gaussian = np.random.random((row, col, 1)).astype(np.float32)
