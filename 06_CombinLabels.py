@@ -45,7 +45,7 @@ wd = getcwd()
 """ Get input label file list """
 label_name_list = []
 for filename in glob.iglob(os.path.join(pathes[0], "*.txt")):
-	label_name_list.append(os.path.basename(filename))\
+	label_name_list.append(os.path.basename(filename))
 
 for label in label_name_list:
 	restore_label(pathes[0] + label, pathes[1] + label, label_save_path+label)
