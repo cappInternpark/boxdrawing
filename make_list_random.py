@@ -8,8 +8,6 @@ current_dir = getcwd()
 
 file_train = open('train.list', 'w')
 
-
-####Process
 list = []
 for f_path in glob.iglob(os.path.join(current_dir, "*.jpg")):
         title, ext = os.path.splitext(os.path.basename(f_path))
