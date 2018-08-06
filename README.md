@@ -1,6 +1,6 @@
 # Box-drawing Utilities for Labeling Objects Inside your Pictures
 
-Here are some utility python codes that can help you label your pictures. These codes allows you to surround your object with visualized square lables and translate them into the appropriate form for running yolo. Below are simple descriptions of what each python code does.
+Here are some utility python codes that can help you label and manage your images and labels. These codes allow you to surround your object with visualized square lables then convert them to the appropriate form for running yolo. Below are simple descriptions of what each python code does.
 
 ## Code Descriptions
 ### 1. 01_main.py
@@ -62,13 +62,17 @@ Shell script to convert newline from DOS format to UNIX format.
 2. Name says format_"list".sh, but it actually works on all files. Cheers.
 
 ### 11. delete_label.py
-delete label files except specific number
+Delete label files except specific number
 > How to use :
-1. set "rest_size" : number of label files which will survive
-2. set "label_path" : set label path 
+1. Set "rest_size" : number of label files which will survive
+2. Set "label_path" : set label path 
 
+### 12. missing.py
+Print and make a list of imgs/labels whose corresponding label/img is missing.
+> How to use :
+1. Just run the code!
 
-## Couple Notes
+## Notes
 1. Strongly advised that Images, Labels, Labels_formal directories be made identically as the provided templates(relative path from source code as well). You can keep things lot simpler this way.
 2. Codes without indices (augment, makelist and rename) are meant to be used just before training or testing in darknet. They work for images and corresponding labels residing in the same directory as themselves, so they should be copied to the path to your darknet dataset before use. Be sure that non-relevant .jpg or .txt files are not included in the directory(Otherwise they will be considered a part of your training / test sets).
 3. Might have to convert DOS codes to UNIX codes before use. 
