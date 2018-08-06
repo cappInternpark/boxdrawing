@@ -61,6 +61,12 @@ Shell script to convert newline from DOS format to UNIX format.
 1. In UNIX device : type "./format.sh {your file name}" and hit enter.
 2. Name says format_"list".sh, but it actually works on all files. Cheers.
 
+### 11. delete_label.py
+delete label files except specific number
+> How to use :
+1. set "rest_size" : number of label files which will survive
+2. set "label_path" : set label path 
+
 
 ## Couple Notes
 1. Strongly advised that Images, Labels, Labels_formal directories be made identically as the provided templates(relative path from source code as well). You can keep things lot simpler this way.
