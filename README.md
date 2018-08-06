@@ -33,27 +33,32 @@ Creates a list of train set and test set in separate ".list" files. They are nam
 ### 5. 05_Formal2Labels.py
 In case the original label files are lost, use this code to convert your Label_formal files back to the original label files.
 > How to use :
-1. Specify path to Label_formal files and the to-be-generated Label files.
+1. Specify path to Label_formal files and the to-be-generated Label files.i
+2. Modify class information. Be sure to check item-index correspondence.
 
 ### 6. augment.py
 Augment your images by adding blur or noise to your images. You can also rotate your image by 180 degrees.
 > How to use :
 1. Set parameters for augmentation.
+2. Run the code.
 
 ### 7. make_list_inorder.py
 Create a list of all ".jpg" files resident in the current directory. The files are enlisted in order.
 > How to use :
-1. Just run the code!
+1. Modify output list name, most likely "train.list".
+2. Run the code.
 
 ### 8. make_list_random.py
 Create a shuffled list of all ".jpg" files resident in the current directory.
 > How to use :
-1. Just run the code!
+1. Modify output list name, most likely "train.list".
+2. Run the code.
 
 ### 9. rename.py
 Rename files in current directory by replacing a certain expression to another.
 > How to use :
-1. Modify replace( {src} , {dst} ) and run.
+1. Modify replace( {src} , {dst} ).
+2. Run the code.
 
 ### 10. format_list.sh
 Shell script to convert newline from DOS format to UNIX format.
@@ -68,9 +73,10 @@ Delete label files except specific number
 2. Set "label_path" : set label path 
 
 ### 12. missing.py
-Print and make a list of imgs/labels whose corresponding label/img is missing.
+Print and make a list of imgs/labels whose corresponding label/img is missing. The result will be both printed and made into a list entitled, 'missing.list'. The list is created in the current directory.
 > How to use :
-1. Just run the code!
+1. Run the code.
+2. See results from output or 'missing.list'.
 
 ## Notes
 1. Strongly advised that Images, Labels, Labels_formal directories be made identically as the provided templates(relative path from source code as well). You can keep things lot simpler this way.
