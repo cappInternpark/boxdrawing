@@ -53,4 +53,5 @@ for filename in glob.iglob(os.path.join(label_formal_path, "*.txt")):
 
 """ Restore original label from formalized label """
 for label_formal_file in label_name_list :
+    print(label_formal_file)
     restore_label(label_formal_path, label_formal_file, label_save_path)
