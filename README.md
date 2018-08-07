@@ -79,9 +79,15 @@ Print and make a list of imgs/labels whose corresponding label/img is missing. T
 2. See results from output or 'missing.list'.
 
 ### 13. even_out.py
-Make a list of data of a specific length. The list contains all of the original data + randomly chosen data out of the original data. The list is created by the "train.list".
+Make a list of data of a specific length. The list contains all of the original data + randomly chosen data out of the original data. The list is created by the "train.list". Unrelevant files that are probably unneeded are enlisted before termination. 
 > How to use :
 1. Specify goal for list length.
+2. Run the code.
+
+### 14. augmnet_multiple.py
+Augment a specified percentage of data using multiple augmentation methods. Separate methods are applied to randomly picked data separately to create separate results. They are not applied in combination to a given data.
+> How to use :
+1. Activate / Deactivate augmentation method.
 2. Run the code.
 
 ## Notes
