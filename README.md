@@ -78,6 +78,12 @@ Print and make a list of imgs/labels whose corresponding label/img is missing. T
 1. Run the code.
 2. See results from output or 'missing.list'.
 
+### 13. even_out.py
+Make a list of data of a specific length. The list contains all of the original data + randomly chosen data out of the original data. The list is created by the "train.list".
+> How to use :
+1. Specify goal for list length.
+2. Run the code.
+
 ## Notes
 1. Strongly advised that Images, Labels, Labels_formal directories be made identically as the provided templates(relative path from source code as well). You can keep things lot simpler this way.
 2. Codes without indices (augment, makelist and rename) are meant to be used just before training or testing in darknet. They work for images and corresponding labels residing in the same directory as themselves, so they should be copied to the path to your darknet dataset before use. Be sure that non-relevant .jpg or .txt files are not included in the directory(Otherwise they will be considered a part of your training / test sets).
