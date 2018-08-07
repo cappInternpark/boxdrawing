@@ -29,8 +29,8 @@ rot180=1
 x,y
 width and height of blur kernel
 """
-x = 6
-y = 6
+x = 5
+y = 5
 
 """
 percentage out of all files to augment
@@ -71,10 +71,10 @@ def add_gaussian_noise(img):
 	beta – weight of the second array elements.
 	gamma – scalar added to each sum.
 	"""
-	alpha = random.uniform(0.8,1)
-	beta = random.uniform(0.8,1)
-	gamma = random.uniform(0.8,1)
-	strength = 0.001
+	alpha = random.uniform(0.4,1)
+	beta = random.uniform(0.4,1)
+	gamma = random.uniform(0.4,1)
+	strength = 0.01
 	""""""""""""""" Settings """""""""""""""
 	
 	gaussian = np.random.random((row, col, 1)).astype(np.float32)
@@ -89,8 +89,8 @@ def add_salt_pepper_noise(X_imgs):
 	row, col, _ = X_imgs_copy.shape
 	
 	""""""""""""""" Settings """""""""""""""
-	salt_vs_pepper = 0.2
-	amount = 0.004
+	salt_vs_pepper = 0.5
+	amount = 0.01
 	""""""""""""""" Settings """""""""""""""
 	
 	num_salt = np.ceil(amount * X_imgs_copy[0].size * salt_vs_pepper)
@@ -128,7 +128,7 @@ for img_name in img_name_list:
 				txt_name = img_name.split(".")[0]+".txt"
 
 				if blur == 1:
-#						print("blur function is called\n")
+						print("blur function is called")
 						dst = cv2.blur(src,(x,y))
 						out_img = output_path + "blur_" + img_name
 						cv2.imwrite(out_img, dst)
@@ -139,14 +139,14 @@ for img_name in img_name_list:
 								x = int((x-1)/2)*2+1
 						if (y % 2) == 0:
 								y = int((y-1)/2)*2+1
-#						print("Gaussian blur function is called\n")
+						print("Gaussian blur function is called")
 						dst = cv2.GaussianBlur(src, (x,y), sigmaX)
 						out_img = output_path + "gblur_" + img_name
 						cv2.imwrite(out_img, dst)
 						shutil.copyfile(input_path+txt_name, output_path+"gblur_"+txt_name)
 						
 				if mblur == 1:
-#						print("median blur function is called\n")
+						print("median blur function is called")
 						if (x % 2) == 0:
 								x = int((x-1)/2)*2+1
 						dst = cv2.medianBlur(src, x)
@@ -155,21 +155,21 @@ for img_name in img_name_list:
 						shutil.copyfile(input_path+txt_name, output_path+"mblur_"+txt_name)
 						
 				if gn == 1:
-#						print("add Guassian noise function is called\n")
+						print("add Guassian noise function is called")
 						dst = add_gaussian_noise(src)
 						out_img = output_path + "gn_" + img_name
 						cv2.imwrite(out_img, dst)
 						shutil.copyfile(input_path+txt_name, output_path+"gn_"+txt_name)
 						
 				if spn == 1:
-#						print("add salt and pepper noise function is called\n")
+						print("add salt and pepper noise function is called")
 						dst = add_salt_pepper_noise(src)
 						out_img = output_path + "spn_" + img_name
 						cv2.imwrite(out_img, dst)
 						shutil.copyfile(input_path+txt_name, output_path+"spn_"+txt_name)
 
 				if rot180 == 1:
-#						print("rotate 180 degree function is called\n")
+						print("rotate 180 degree function is called")
 						dst = imutils.rotate_bound(src, 180)
 						out_img = output_path + "rot_" + img_name
 						cv2.imwrite(out_img, dst)

@@ -90,6 +90,12 @@ Augment a specified percentage of data using multiple augmentation methods. Sepa
 1. Activate / Deactivate augmentation method.
 2. Run the code.
 
+### 15. combine_lists.py
+Combine multiple lists into one list, "train.list".
+> How to use :
+1. Fill in the list of lists to combine.
+2. Run the code to create "train.list"
+
 ## Notes
 1. Strongly advised that Images, Labels, Labels_formal directories be made identically as the provided templates(relative path from source code as well). You can keep things lot simpler this way.
 2. Codes without indices (augment, makelist and rename) are meant to be used just before training or testing in darknet. They work for images and corresponding labels residing in the same directory as themselves, so they should be copied to the path to your darknet dataset before use. Be sure that non-relevant .jpg or .txt files are not included in the directory(Otherwise they will be considered a part of your training / test sets).

@@ -51,5 +51,6 @@ for name in missinglabel:
 missing.close()
 
 print("Unrelevant files detected:")
+print("missing.list")
 for name in elselist:
 	print name
