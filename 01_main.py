@@ -323,8 +323,12 @@ class LabelTool():
         print("copy")
         sel = self.listbox.curselection()
         if len(sel) != 1:
-            return
-        idx = int(sel[0])
+            if len(self.bboxList) is 0:
+                return
+            else:
+                idx = len(self.bboxList) - 1
+        else:
+            idx = int(sel[0])
         self.bboxcopy = self.bboxList[idx]
         self.bboxcopyId = self.bboxIdList[idx]
         ##self.mainPanel.delete(self.bboxIdList[idx])
@@ -333,6 +337,8 @@ class LabelTool():
         ##self.listbox.delete(idx)
         
     def pasteLabel(self, event = None):
+        if(self.bboxcopy is None):
+            return
         print("paste")
         self.bboxList.append(self.bboxcopy)
         self.bboxIdList.append(self.bboxcopyId)
