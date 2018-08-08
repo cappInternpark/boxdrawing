@@ -2,6 +2,7 @@ from os import getcwd, walk
 
 txtlist=[]
 imglist=[]
+elselist=[]
 
 for (dirpath,dirname,f) in walk(getcwd()):
 	for name in f:
@@ -9,6 +10,8 @@ for (dirpath,dirname,f) in walk(getcwd()):
 			txtlist.append(name)
 		elif name.endswith('.jpg'):
 			imglist.append(name)
+		else:
+			elselist.append(name)
 
 missingimg=[]
 missinglabel=[]
@@ -46,3 +49,8 @@ for name in missinglabel:
 	missing.write(name)
 
 missing.close()
+
+print("Unrelevant files detected:")
+print("missing.list")
+for name in elselist:
+	print name
