@@ -99,6 +99,10 @@ class LabelTool():
         self.currentLabelclass = self.classcandidate.get() #init
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
+        #self.classcandidate.bind("<FocusIn>", self.setClass) # Focus out
+        #self.classcandidate.bind("<FocusOut>", self.setClass) # Focus out
+		
+		# Showing Class LeaderBoard
 
         # showing bbox info & delete bbox
         self.lb1 = Label(self.frame, text = 'Bounding boxes:')
@@ -109,6 +113,7 @@ class LabelTool():
         self.btnDel.grid(row = 5, column = 2, sticky = W+E+N)
         self.btnClear = Button(self.frame, text = 'ClearAll', command = self.clearBBox)
         self.btnClear.grid(row = 6, column = 2, sticky = W+E+N)
+        self.listbox.bind("<Button-3>", self.delBBox)
 
         # control panel for image navigation
         self.ctrPanel = Frame(self.frame)
@@ -282,11 +287,19 @@ class LabelTool():
                 self.bboxId = None
                 self.STATE['click'] = 0
 
-    def delBBox(self):
+    def delBBox(self, event = None):
         sel = self.listbox.curselection()
         if len(sel) != 1 :
-            return
-        idx = int(sel[0])
+            if int(event.y/22) < self.listbox.size():
+                idx = self.listbox.index("@{},{}".format(event.x, event.y))
+            else:
+                return
+        else:
+            idx = int(sel[0])
+        
+        print("{}".format(int(event.y/22)))
+        print("{}".format(self.listbox.size()))
+        
         self.mainPanel.delete(self.bboxIdList[idx])
         self.bboxIdList.pop(idx)
         self.bboxList.pop(idx)
@@ -318,7 +331,7 @@ class LabelTool():
             self.cur = idx
             self.loadImage()
 
-    def setClass(self):
+    def setClass(self, event):
     	self.currentLabelclass = self.classcandidate.get()
     	print ('set label class to :',self.currentLabelclass)
 		
