@@ -58,6 +58,7 @@ class LabelTool():
         self.vl = None
         self.bboxcopy = None
         self.bboxcopyId = None
+        self.bboxSel = None
 
         # ----------------- GUI stuff ---------------------
         # dir entry & load
@@ -78,6 +79,7 @@ class LabelTool():
         self.parent.bind("d", self.nextImage) # press 'd' to go forward
         self.parent.bind("c", self.copyLabel) # press 'c' to copy label
         self.parent.bind("v", self.pasteLabel) # press 'v' to paste label
+        self.parent.bind("r", self.deleteLabel) # press 'r' to delete label
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
         # choose class
@@ -283,7 +285,6 @@ class LabelTool():
         if len(sel) != 1 :
             return
         idx = int(sel[0])
-        self.copyId = idx
         self.mainPanel.delete(self.bboxIdList[idx])
         self.bboxIdList.pop(idx)
         self.bboxList.pop(idx)
@@ -330,22 +331,33 @@ class LabelTool():
         else:
             idx = int(sel[0])
         self.bboxcopy = self.bboxList[idx]
-        self.bboxcopyId = self.bboxIdList[idx]
-        ##self.mainPanel.delete(self.bboxIdList[idx])
-        ##self.bboxIdList.pop(idx)
-        ##self.bboxList.pop(idx)
-        ##self.listbox.delete(idx)
-        
+     
     def pasteLabel(self, event = None):
         if(self.bboxcopy is None):
             return
         print("paste")
         self.bboxList.append(self.bboxcopy)
+        self.bboxcopyId = self.mainPanel.create_rectangle(self.bboxcopy[1], self.bboxcopy[2],\
+                                                            self.bboxcopy[3], self.bboxcopy[4],\
+                                                            width = 2,\
+                                                            outline = COLORS[len(self.bboxList) % len(COLORS)])
         self.bboxIdList.append(self.bboxcopyId)
-        self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.bboxcopy[0],int(self.bboxcopy[1]), int(self.bboxcopy[2]), int(self.bboxcopy[3]), int(self.bboxcopy[4])))
+        self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.bboxcopy[0],\
+                                   int(self.bboxcopy[1]), int(self.bboxcopy[2]),\
+                                   int(self.bboxcopy[3]), int(self.bboxcopy[4])))
         self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-	    
+        self.bboxcopyId = None
 
+    def deleteLabel(self, event = None):
+        if self.bboxSel is None:
+            if not len(self.bboxIdList) is 0:
+                self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
+                self.bboxIdList.pop()
+                self.bboxList.pop()
+                self.listbox.delete(len(self.bboxIdList))
+            else:
+                return
+		    
 ##    def setImage(self, imagepath = r'test2.png'):
 ##        self.img = Image.open(imagepath)
 ##        self.tkimg = ImageTk.PhotoImage(self.img)
