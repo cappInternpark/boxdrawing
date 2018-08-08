@@ -6,6 +6,8 @@
 
 #
 #-------------------------------------------------------------------------------
+
+# Undo, Class Leaderborad, Same Class Color, Auto Class Comfirm, Right Click Delete
 from __future__ import division
 from tkinter import *
 import tkinter.messagebox
@@ -321,7 +323,6 @@ class LabelTool():
     	print ('set label class to :',self.currentLabelclass)
 		
     def copyLabel(self,event = None):
-        print("copy")
         sel = self.listbox.curselection()
         if len(sel) != 1:
             if len(self.bboxList) is 0:
@@ -335,12 +336,11 @@ class LabelTool():
     def pasteLabel(self, event = None):
         if(self.bboxcopy is None):
             return
-        print("paste")
-        self.bboxList.append(self.bboxcopy)
         self.bboxcopyId = self.mainPanel.create_rectangle(self.bboxcopy[1], self.bboxcopy[2],\
                                                             self.bboxcopy[3], self.bboxcopy[4],\
                                                             width = 2,\
-                                                            outline = COLORS[len(self.bboxList) % len(COLORS)])
+                                                            outline = (COLORS[len(self.bboxList)% len(COLORS)]))
+        self.bboxList.append(self.bboxcopy)
         self.bboxIdList.append(self.bboxcopyId)
         self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.bboxcopy[0],\
                                    int(self.bboxcopy[1]), int(self.bboxcopy[2]),\
@@ -349,7 +349,8 @@ class LabelTool():
         self.bboxcopyId = None
 
     def deleteLabel(self, event = None):
-        if self.bboxSel is None:
+        sel = self.listbox.curselection()
+        if len(sel) != 1:
             if not len(self.bboxIdList) is 0:
                 self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
                 self.bboxIdList.pop()
@@ -357,6 +358,12 @@ class LabelTool():
                 self.listbox.delete(len(self.bboxIdList))
             else:
                 return
+        else:
+            idx = int(sel[0])
+            self.mainPanel.delete(self.bboxIdList[idx])
+            self.bboxIdList.pop(idx)
+            self.bboxList.pop(idx)
+            self.listbox.delete(idx)
 		    
 ##    def setImage(self, imagepath = r'test2.png'):
 ##        self.img = Image.open(imagepath)
