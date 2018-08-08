@@ -99,7 +99,8 @@ class LabelTool():
         self.currentLabelclass = self.classcandidate.get() #init
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
-        #self.classcandidate.bind("<FocusIn>", self.setClass) # Focus out
+        self.classcandidate.bind("<FocusIn>", self.setClass) # 
+        #self.classcandidate.entry.bind("<FocusOut>", self.setClass)
         #self.classcandidate.bind("<FocusOut>", self.setClass) # Focus out
 		
 		# Showing Class LeaderBoard
@@ -290,15 +291,14 @@ class LabelTool():
     def delBBox(self, event = None):
         sel = self.listbox.curselection()
         if len(sel) != 1 :
+            if event is None:
+                return
             if int(event.y/22) < self.listbox.size():
                 idx = self.listbox.index("@{},{}".format(event.x, event.y))
             else:
                 return
         else:
             idx = int(sel[0])
-        
-        print("{}".format(int(event.y/22)))
-        print("{}".format(self.listbox.size()))
         
         self.mainPanel.delete(self.bboxIdList[idx])
         self.bboxIdList.pop(idx)
@@ -331,9 +331,14 @@ class LabelTool():
             self.cur = idx
             self.loadImage()
 
-    def setClass(self, event):
-    	self.currentLabelclass = self.classcandidate.get()
-    	print ('set label class to :',self.currentLabelclass)
+    def setClass(self, event = None):
+        if event is None:
+            self.currentLabelclass = self.classcandidate.get()
+            print ('set label class to :',self.currentLabelclass)
+        else:
+            if self.currentLabelclass != self.classcandidate.get():
+                self.currentLabelclass = self.classcandidate.get()
+                print ('set label class to :',self.currentLabelclass)
 		
     def copyLabel(self,event = None):
         sel = self.listbox.curselection()
