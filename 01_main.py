@@ -58,8 +58,9 @@ class LabelTool():
         self.bboxList = []
         self.hl = None
         self.vl = None
-        self.bboxcopy = None
-        self.bboxcopyId = None
+        #self.bboxcopy = None
+        #self.bboxcopyId = None
+        self.bboxcopyList = []
         self.bboxSel = None
 
         # ----------------- GUI stuff ---------------------
@@ -109,6 +110,7 @@ class LabelTool():
         self.lb1 = Label(self.frame, text = 'Bounding boxes:')
         self.lb1.grid(row = 3, column = 2,  sticky = W+N)
         self.listbox = Listbox(self.frame, width = 22, height = 12)
+        self.listbox.config(selectmode=EXTENDED)
         self.listbox.grid(row = 4, column = 2, sticky = N+S)
         self.btnDel = Button(self.frame, text = 'Delete', command = self.delBBox)
         self.btnDel.grid(row = 5, column = 2, sticky = W+E+N)
@@ -249,7 +251,6 @@ class LabelTool():
                 f.write(' '.join(map(str, bbox)) + '\n')
         print ('Image No. %d saved' %(self.cur))
 
-
     def mouseClick(self, event):
         if self.STATE['click'] == 0:
             self.STATE['x'], self.STATE['y'] = event.x, event.y
@@ -341,47 +342,46 @@ class LabelTool():
                 print ('set label class to :',self.currentLabelclass)
 		
     def copyLabel(self,event = None):
-        sel = self.listbox.curselection()
-        if len(sel) != 1:
-            if len(self.bboxList) is 0:
+        if len(self.bboxList) is 0:
                 return
-            else:
-                idx = len(self.bboxList) - 1
+        sel = self.listbox.curselection()
+        self.bboxcopyList = []
+        if len(sel) is 0:
+            self.bboxcopyList.append(self.bboxList[len(self.bboxList) - 1])
         else:
-            idx = int(sel[0])
-        self.bboxcopy = self.bboxList[idx]
-     
+            for idx in sel:
+                self.bboxcopyList.append(self.bboxList[idx])
+
     def pasteLabel(self, event = None):
-        if(self.bboxcopy is None):
+        if(len(self.bboxcopyList) is 0):
             return
-        self.bboxcopyId = self.mainPanel.create_rectangle(self.bboxcopy[1], self.bboxcopy[2],\
-                                                            self.bboxcopy[3], self.bboxcopy[4],\
-                                                            width = 2,\
-                                                            outline = (COLORS[len(self.bboxList)% len(COLORS)]))
-        self.bboxList.append(self.bboxcopy)
-        self.bboxIdList.append(self.bboxcopyId)
-        self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.bboxcopy[0],\
-                                   int(self.bboxcopy[1]), int(self.bboxcopy[2]),\
-                                   int(self.bboxcopy[3]), int(self.bboxcopy[4])))
-        self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-        self.bboxcopyId = None
+        for bboxcopy in self.bboxcopyList:
+            bboxcopyId = self.mainPanel.create_rectangle(bboxcopy[1], bboxcopy[2],\
+                                                        bboxcopy[3], bboxcopy[4],\
+                                                        width = 2,\
+                                                        outline = (COLORS[len(self.bboxList)% len(COLORS)]))
+            self.bboxList.append(bboxcopy)
+            self.bboxIdList.append(bboxcopyId)
+            self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(bboxcopy[0],\
+                                        int(bboxcopy[1]), int(bboxcopy[2]),\
+                                        int(bboxcopy[3]), int(bboxcopy[4])))
+            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
 
     def deleteLabel(self, event = None):
-        sel = self.listbox.curselection()
-        if len(sel) != 1:
-            if not len(self.bboxIdList) is 0:
-                self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
-                self.bboxIdList.pop()
-                self.bboxList.pop()
-                self.listbox.delete(len(self.bboxIdList))
-            else:
+        if len(self.bboxList) is 0:
                 return
+        sel = self.listbox.curselection()
+        if len(sel) is 0:
+            self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
+            self.listbox.delete(len(self.bboxIdList)-1)
+            self.bboxIdList.pop()
+            self.bboxList.pop()
         else:
-            idx = int(sel[0])
-            self.mainPanel.delete(self.bboxIdList[idx])
-            self.bboxIdList.pop(idx)
-            self.bboxList.pop(idx)
-            self.listbox.delete(idx)
+            for idx in reversed(list(sel)):
+                self.mainPanel.delete(self.bboxIdList[idx])
+                self.bboxIdList.pop(idx)
+                self.bboxList.pop(idx)
+                self.listbox.delete(idx)
 		    
 ##    def setImage(self, imagepath = r'test2.png'):
 ##        self.img = Image.open(imagepath)
