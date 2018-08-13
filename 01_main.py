@@ -18,7 +18,10 @@ import glob
 import random
 
 # colors for the bboxes
-COLORS = ['red', 'blue', 'olive', 'teal', 'cyan', 'green', 'black']
+# https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
+# above link is color dictionary in matlib
+COLORS = ['red', 'blue', 'olive', 'teal', 'skyblue', 'orange',\
+          'cyan', 'green', 'yellow', 'magenta', 'black']
 # image sizes for the examples
 SIZE = 256, 256
 
@@ -58,12 +61,10 @@ class LabelTool():
         self.bboxList = []
         self.hl = None
         self.vl = None
-        #self.bboxcopy = None
-        #self.bboxcopyId = None
         self.bboxcopyList = []
         self.bboxSel = None
 
-        # ----------------- GUI stuff ---------------------
+        # -----------------   stuff ---------------------
         # dir entry & load
         self.label = Label(self.frame, text = "Image Dir:")
         self.label.grid(row = 0, column = 0, sticky = E)
@@ -83,6 +84,7 @@ class LabelTool():
         self.parent.bind("c", self.copyLabel) # press 'c' to copy label
         self.parent.bind("v", self.pasteLabel) # press 'v' to paste label
         self.parent.bind("r", self.deleteLabel) # press 'r' to delete label
+        self.parent.bind("z", self.undoLabel) # press 'z' to undo label
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
         # choose class
@@ -101,9 +103,6 @@ class LabelTool():
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
         self.classcandidate.bind("<FocusIn>", self.setClass) # 
-        #self.classcandidate.entry.bind("<FocusOut>", self.setClass)
-        #self.classcandidate.bind("<FocusOut>", self.setClass) # Focus out
-		
 		# Showing Class LeaderBoard
 
         # showing bbox info & delete bbox
@@ -231,18 +230,24 @@ class LabelTool():
                         bbox_cnt = int(line.strip())
                         continue
                     # tmp = [int(t.strip()) for t in line.split()]
-                    tmp = line.split()
+                    tmp = tuple(line.split())
                     #print tmp
-                    self.bboxList.append(tuple(tmp))
+                    #
+                    idx =  self.sortLabelIdx(tmp, self.cla_can_temp)
+                    try:
+                        class_idx = self.cla_can_temp.index(tmp[0])
+                    except ValueError:
+                        class_idx = len(self.cla_can_temp)+len(self.bboxList)
+                    self.bboxList.insert(idx, tmp)
                     tmpId = self.mainPanel.create_rectangle(int(tmp[1]), int(tmp[2]), \
                                                             int(tmp[3]), int(tmp[4]), \
                                                             width = 2, \
-                                                            outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
+                                                            outline = COLORS[class_idx % len(COLORS)])
                     # print tmpId
-                    self.bboxIdList.append(tmpId)
-                    self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(tmp[0],int(tmp[1]), int(tmp[2]), \
+                    self.bboxIdList.insert(idx, tmpId)
+                    self.listbox.insert(idx, '%s : (%d, %d) -> (%d, %d)' %(tmp[0],int(tmp[1]), int(tmp[2]), \
                     												  int(tmp[3]), int(tmp[4])))
-                    self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+                    self.listbox.itemconfig(idx, fg = COLORS[class_idx % len(COLORS)])
 
     def saveImage(self):
         with open(self.labelfilename, 'w') as f:
@@ -258,11 +263,19 @@ class LabelTool():
             x1, x2 = min(self.STATE['x'], event.x), max(self.STATE['x'], event.x)
             y1, y2 = min(self.STATE['y'], event.y), max(self.STATE['y'], event.y)
             #self.bboxList.append((x1, y1, x2, y2, self.currentLabelclass))
-            self.bboxList.append((self.currentLabelclass, x1, y1, x2, y2))
-            self.bboxIdList.append(self.bboxId)
+			#########################
+            tmp = (self.currentLabelclass, str(x1), str(y1), str(x2), str(y2))
+            idx =  self.sortLabelIdx(tmp, self.cla_can_temp)
+            try:
+                class_idx = self.cla_can_temp.index(tmp[0])
+            except ValueError:
+                class_idx = len(self.cla_can_temp)+len(self.bboxList)
+            #########################
+            self.bboxList.insert(idx, tmp)
+            self.bboxIdList.insert(idx, self.bboxId)
             self.bboxId = None
-            self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.currentLabelclass,x1, y1, x2, y2))
-            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+            self.listbox.insert(idx, '%s : (%d, %d) -> (%d, %d)' %(self.currentLabelclass,x1, y1, x2, y2))
+            self.listbox.itemconfig(idx, fg = COLORS[class_idx % len(COLORS)])
         self.STATE['click'] = 1 - self.STATE['click']
 
     def mouseMove(self, event):
@@ -280,7 +293,7 @@ class LabelTool():
             self.bboxId = self.mainPanel.create_rectangle(self.STATE['x'], self.STATE['y'], \
                                                             event.x, event.y, \
                                                             width = 2, \
-                                                            outline = COLORS[len(self.bboxList) % len(COLORS)])
+                                                            outline = COLORS[self.cla_can_temp.index(self.currentLabelclass) % len(COLORS)])
 
     def cancelBBox(self, event):
         if 1 == self.STATE['click']:
@@ -383,6 +396,34 @@ class LabelTool():
                 self.bboxList.pop(idx)
                 self.listbox.delete(idx)
 		    
+    def undoLabel(self, event = None):
+        print(self.bboxList)
+        print(self.bboxIdList)
+        return
+	
+    def sortLabelIdx(self, label, classes):
+        if type(label) is tuple:
+            key = label[0]
+        elif type(label) is list:
+            return len(self.bboxList)
+        elif type(label) is str:
+            key = label
+        idx = 0
+        try:
+            classes.index(key)
+        except ValueError:
+            print("Warning: doesn't exist {} class".format(key))
+            return len(self.bboxList)
+        try:
+            # Linear Search
+            for bbox in self.bboxList:
+                if classes.index(bbox[0]) > classes.index(key):
+                    break;
+                idx = idx + 1
+        except ValueError:
+            return idx
+        return idx
+
 ##    def setImage(self, imagepath = r'test2.png'):
 ##        self.img = Image.open(imagepath)
 ##        self.tkimg = ImageTk.PhotoImage(self.img)
