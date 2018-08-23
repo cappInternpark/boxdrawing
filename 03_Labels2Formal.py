@@ -40,9 +40,9 @@ except Exception as e:
 	
 print (classes)
 """ Configure Paths"""   
-mypath = "Labels/001/"
-Imgpath = "Images/001/"
-outpath = "Labels_formal/001/"
+mypath = "Labels/101/"
+Imgpath = "Images/101/"
+outpath = "Labels_formal/101/"
 exit()
 wd = getcwd()
 #list_file = open('%s/001_list.txt'%(wd), 'w')
