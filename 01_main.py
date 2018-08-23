@@ -89,6 +89,12 @@ class LabelTool():
         self.parent.bind("c", self.copyLabel) # press 'c' to copy label
         self.parent.bind("v", self.pasteLabel) # press 'v' to paste label
         self.parent.bind("r", self.deleteLabel) # press 'r' to delete label
+        self.parent.bind("<Control-KeyPress-1>", self.setClassKey) # press 'ctrl + 1' to set class id_0
+        self.parent.bind("<Control-KeyPress-2>", self.setClassKey) # press 'ctrl + 1' to set class id_1
+        self.parent.bind("<Control-KeyPress-3>", self.setClassKey) # press 'ctrl + 1' to set class id_2
+        self.parent.bind("<Control-KeyPress-4>", self.setClassKey) # press 'ctrl + 1' to set class id_3
+        self.parent.bind("<Control-KeyPress-5>", self.setClassKey) # press 'ctrl + 1' to set class id_4
+        self.parent.bind("<Control-KeyPress-6>", self.setClassKey) # press 'ctrl + 1' to set class id_5
         self.parent.bind("z", self.undo)       # press 'z' to undo
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
@@ -399,7 +405,13 @@ class LabelTool():
             self.bboxIdList.pop(idx)
             self.bboxList.pop(idx)
             self.listbox.delete(idx)
-
+    
+    # you can set class on keyboard
+    def setClassKey(self, event):
+        self.cla_can_temp
+        ek = event.keycode
+        self.currentLabelclass = self.cla_can_temp[ek-49]
+        print ('set label class to :'+ self.currentLabelclass)
 
     def undo(self, event =None):
         # print (self.history)
