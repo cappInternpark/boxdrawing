@@ -13,6 +13,7 @@ Executes the labeling program.
 5. Click to label. Only 2 clicks are required for labeling an object. Just to be safe, it is recommended that you click from the upper-left corner to the lower-right corner.
 6. Delete inserted labels by selecting and hitting "Delete" to delete a selected label, or click "ClearAll" to delete all labels for a single image.
 7. Each visualization of label is stored in ".txt" format inside "Labels/{your directory number}/"
+8. If you want to set class without clicking, you can set class with keyboard 'ctrl + (id)'
 
 ### 2. 02_removeEmptyFile.py
 Removes redundant images with no label and empty label files.
