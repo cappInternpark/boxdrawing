@@ -36,14 +36,19 @@ try:
             print("loop")
             classes.append(line)
 except Exception as e:
-    classes = ["ParisRedbean","Vita500","TunaCan","VitaJelly","Myzzo","Staples"]
+    print("You will use default class?")
+    a = input("If you agree, input 'y' :")
+    if a is 'y':
+        classes = ["ParisRedbean","Vita500","TunaCan","VitaJelly","Myzzo","Staples"]
+    else:
+        exit()
 	
 print (classes)
 """ Configure Paths"""   
 mypath = "Labels/101/"
 Imgpath = "Images/101/"
 outpath = "Labels_formal/101/"
-exit()
+
 wd = getcwd()
 #list_file = open('%s/001_list.txt'%(wd), 'w')
 #not_list_file = open('%s/not_%s_list.txt'%(wd, cls), 'w')

@@ -7,13 +7,24 @@ Here are some utility python codes that can help you label and manage your image
 Executes the labeling program.
 > How to use :
 1. Requires a "class.txt" file that identifies class names in separate lines.
-2. Requires an "Examples/demo/" directory that stores 3 demo images(Don't know whether random images work).
+2. Requires an "Examples/demo/" directory. (Just requires a directory. Doesn't matter the # of images in this directory.)
 3. Once the program appears on screen, specify the directory for your images and hit "Load". You will see your very first image file in the center.
-4. Next, select object class and hit "Confirm" for the object you want to label.
-5. Click to label. Only 2 clicks are required for labeling an object. Just to be safe, it is recommended that you click from the upper-left corner to the lower-right corner.
+4. Next, select object class and hit "Confirm" for the object you want to label. (you don't need to hit "Confirm". it's enough to select an item and focus out the combo_box)
+5. Click to label. Only 2 clicks are required for labeling an object. Just to be safe, it is recommended that you click from the upper-left corner to the lower-right corner.(Acutally it dosen't matter.)
 6. Delete inserted labels by selecting and hitting "Delete" to delete a selected label, or click "ClearAll" to delete all labels for a single image.
 7. Each visualization of label is stored in ".txt" format inside "Labels/{your directory number}/"
-8. If you want to set class without clicking, you can set class with keyboard 'ctrl + (id)'
+
+> Functions :
+1. 'a' : goto next image
+2. 'd' : goto prev image
+3. 'c' : Copy labels. You can select multiple labels.
+4. 'v' : Paste labels.
+5. 'r' : remove a last label. If you select a label or labels in label_list_box, the label(s) will be removed.
+6. 'z' : remake a last label you made by clicking.
+7. 'ctrl + (id)' : If you want to set class without clicking, you can set class with keyboard 'ctrl + (id)'
+
+> these are bugs : 
+1. If you focus in this program when you change class with 'ctrl + (id)', your selected class will be changed to selected class in combo_box
 
 ### 2. 02_removeEmptyFile.py
 Removes redundant images with no label and empty label files.
@@ -25,11 +36,14 @@ Converts labels to appropriate form for feeding yolo network.
 > How to use :
 1. Specify the path to your label text files and path to save the converted labels.
 
+> Precautions :
+1. Must exist "class.txt" file that you modified. When "class.txt" does not exists or is empty file, it asks you'll use default class(=["ParisRedbean","Vita500","TunaCan","VitaJelly","Myzzo","Staples"]).
+
 ### 4. 04_trainTestList.py
 Creates a list of train set and test set in separate ".list" files. They are named "train.list" and "test.list"
 > How to use :
 1. Specify the directory where your Label_formal files reside and where your images reside.
-2. Specify the percentage to make your test set. [0,100] The remainder will become the train set.
+2. Specify the percentage to make your test set. (0,100] The remainder will become the train set.
 
 ### 5. 05_Formal2Labels.py
 In case the original label files are lost, use this code to convert your Label_formal files back to the original label files.

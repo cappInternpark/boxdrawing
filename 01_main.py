@@ -21,7 +21,10 @@ from collections import deque
 # maximum length of history.
 MAX_LEN = 5
 # colors for the bboxes
-COLORS = ['red', 'blue', 'olive', 'teal', 'cyan', 'green', 'black']
+# https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
+# above link is color dictionary in matlib
+COLORS = ['red', 'blue', 'teal', 'skyblue', 'orange', 'cyan',\
+          'green', 'yellow', 'magenta', 'olive', 'black']
 # image sizes for the examples
 SIZE = 256, 256
 
@@ -61,14 +64,13 @@ class LabelTool():
         self.bboxList = []
         self.hl = None
         self.vl = None
-        self.bboxcopy = None
-        self.bboxcopyId = None
+        self.bboxcopyList = []
         self.bboxSel = None
 
         # history for undo
         self.history = deque([''], maxlen = MAX_LEN)
         self.historyId = None
-
+		
         # ----------------- GUI stuff ---------------------
         # dir entry & load
         self.label = Label(self.frame, text = "Image Dir:")
@@ -90,11 +92,11 @@ class LabelTool():
         self.parent.bind("v", self.pasteLabel) # press 'v' to paste label
         self.parent.bind("r", self.deleteLabel) # press 'r' to delete label
         self.parent.bind("<Control-KeyPress-1>", self.setClassKey) # press 'ctrl + 1' to set class id_0
-        self.parent.bind("<Control-KeyPress-2>", self.setClassKey) # press 'ctrl + 1' to set class id_1
-        self.parent.bind("<Control-KeyPress-3>", self.setClassKey) # press 'ctrl + 1' to set class id_2
-        self.parent.bind("<Control-KeyPress-4>", self.setClassKey) # press 'ctrl + 1' to set class id_3
-        self.parent.bind("<Control-KeyPress-5>", self.setClassKey) # press 'ctrl + 1' to set class id_4
-        self.parent.bind("<Control-KeyPress-6>", self.setClassKey) # press 'ctrl + 1' to set class id_5
+        self.parent.bind("<Control-KeyPress-2>", self.setClassKey) # press 'ctrl + 2' to set class id_1
+        self.parent.bind("<Control-KeyPress-3>", self.setClassKey) # press 'ctrl + 3' to set class id_2
+        self.parent.bind("<Control-KeyPress-4>", self.setClassKey) # press 'ctrl + 4' to set class id_3
+        self.parent.bind("<Control-KeyPress-5>", self.setClassKey) # press 'ctrl + 5' to set class id_4
+        self.parent.bind("<Control-KeyPress-6>", self.setClassKey) # press 'ctrl + 6' to set class id_5
         self.parent.bind("z", self.undo)       # press 'z' to undo
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
@@ -114,15 +116,13 @@ class LabelTool():
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
         self.classcandidate.bind("<FocusIn>", self.setClass) # 
-        #self.classcandidate.entry.bind("<FocusOut>", self.setClass)
-        #self.classcandidate.bind("<FocusOut>", self.setClass) # Focus out
-		
 		# Showing Class LeaderBoard
 
         # showing bbox info & delete bbox
         self.lb1 = Label(self.frame, text = 'Bounding boxes:')
         self.lb1.grid(row = 3, column = 2,  sticky = W+N)
         self.listbox = Listbox(self.frame, width = 22, height = 12)
+        self.listbox.config(selectmode=EXTENDED)
         self.listbox.grid(row = 4, column = 2, sticky = N+S)
         self.btnDel = Button(self.frame, text = 'Delete', command = self.delBBox)
         self.btnDel.grid(row = 5, column = 2, sticky = W+E+N)
@@ -244,20 +244,25 @@ class LabelTool():
                         bbox_cnt = int(line.strip())
                         continue
                     # tmp = [int(t.strip()) for t in line.split()]
-                    tmp = line.split()
+                    tmp = tuple(line.split())
                     #print tmp
-                    self.bboxList.append(tuple(tmp))
+                    #
+                    idx =  self.sortLabelIdx(tmp, self.cla_can_temp)
+                    try:
+                        class_idx = self.cla_can_temp.index(tmp[0])
+                    except ValueError:
+                        class_idx = len(self.cla_can_temp)+len(self.bboxList)
+                    self.bboxList.insert(idx, tmp)
                     tmpId = self.mainPanel.create_rectangle(int(tmp[1]), int(tmp[2]), \
                                                             int(tmp[3]), int(tmp[4]), \
                                                             width = 2, \
                                                             outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
+                                                            outline = COLORS[class_idx % len(COLORS)])
                     # print tmpId
-                    self.bboxIdList.append(tmpId)
-                    self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(tmp[0],int(tmp[1]), int(tmp[2]), \
+                    self.bboxIdList.insert(idx, tmpId)
+                    self.listbox.insert(idx, '%s : (%d, %d) -> (%d, %d)' %(tmp[0],int(tmp[1]), int(tmp[2]), \
                     												  int(tmp[3]), int(tmp[4])))
-                    self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-
-
+                    self.listbox.itemconfig(idx, fg = COLORS[class_idx % len(COLORS)])
 
     def saveImage(self):
         with open(self.labelfilename, 'w') as f:
@@ -266,7 +271,6 @@ class LabelTool():
                 f.write(' '.join(map(str, bbox)) + '\n')
         print ('Image No. %d saved' %(self.cur))
 
-
     def mouseClick(self, event):
         if self.STATE['click'] == 0:
             self.STATE['x'], self.STATE['y'] = event.x, event.y
@@ -274,13 +278,20 @@ class LabelTool():
             x1, x2 = min(self.STATE['x'], event.x), max(self.STATE['x'], event.x)
             y1, y2 = min(self.STATE['y'], event.y), max(self.STATE['y'], event.y)
             #self.bboxList.append((x1, y1, x2, y2, self.currentLabelclass))
-            self.bboxList.append((self.currentLabelclass, x1, y1, x2, y2))
+			#########################
+            tmp = (self.currentLabelclass, str(x1), str(y1), str(x2), str(y2))
+            idx =  self.sortLabelIdx(tmp, self.cla_can_temp)
+            try:
+                class_idx = self.cla_can_temp.index(tmp[0])
+            except ValueError:
+                class_idx = len(self.cla_can_temp)+len(self.bboxList)
+            #########################
+            self.bboxList.insert(idx, tmp)
             self.history.append((self.currentLabelclass, x1, y1, x2, y2))
-            #print (self.history)
-            self.bboxIdList.append(self.bboxId)
+            self.bboxIdList.insert(idx, self.bboxId)
             self.bboxId = None
-            self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.currentLabelclass,x1, y1, x2, y2))
-            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+            self.listbox.insert(idx, '%s : (%d, %d) -> (%d, %d)' %(self.currentLabelclass,x1, y1, x2, y2))
+            self.listbox.itemconfig(idx, fg = COLORS[class_idx % len(COLORS)])
         self.STATE['click'] = 1 - self.STATE['click']
 
     def mouseMove(self, event):
@@ -298,8 +309,7 @@ class LabelTool():
             self.bboxId = self.mainPanel.create_rectangle(self.STATE['x'], self.STATE['y'], \
                                                             event.x, event.y, \
                                                             width = 2, \
-                                                            outline = COLORS[len(self.bboxList) % len(COLORS)])
-
+                                                            outline = COLORS[self.cla_can_temp.index(self.currentLabelclass) % len(COLORS)])
 
     def cancelBBox(self, event):
         if 1 == self.STATE['click']:
@@ -364,49 +374,71 @@ class LabelTool():
                 print ('set label class to :',self.currentLabelclass)
 		
     def copyLabel(self,event = None):
-        sel = self.listbox.curselection()
-        if len(sel) != 1:
-            if len(self.bboxList) is 0:
+        if len(self.bboxList) is 0:
                 return
             else:
-                idx = len(self.bboxList) - 1
+        sel = self.listbox.curselection()
+        self.bboxcopyList = []
+        if len(sel) is 0:
+            self.bboxcopyList.append(self.bboxList[len(self.bboxList) - 1])
         else:
-            idx = int(sel[0])
-        self.bboxcopy = self.bboxList[idx]
-     
+            for idx in sel:
+                self.bboxcopyList.append(self.bboxList[idx])
+
     def pasteLabel(self, event = None):
-        if(self.bboxcopy is None):
+        if(len(self.bboxcopyList) is 0):
             return
-        self.bboxcopyId = self.mainPanel.create_rectangle(self.bboxcopy[1], self.bboxcopy[2],\
-                                                            self.bboxcopy[3], self.bboxcopy[4],\
-                                                            width = 2,\
-                                                            outline = (COLORS[len(self.bboxList)% len(COLORS)]))
-        self.bboxList.append(self.bboxcopy)
-        self.bboxIdList.append(self.bboxcopyId)
-        self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.bboxcopy[0],\
-                                   int(self.bboxcopy[1]), int(self.bboxcopy[2]),\
-                                   int(self.bboxcopy[3]), int(self.bboxcopy[4])))
-        self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-        self.bboxcopyId = None
+        for bboxcopy in self.bboxcopyList:
+            try:
+                class_idx = self.cla_can_temp.index(bboxcopy[0])
+            except ValueError:
+                class_idx = len(self.cla_can_temp)+len(self.bboxList)
+            bboxcopyId = self.mainPanel.create_rectangle(bboxcopy[1], bboxcopy[2],\
+                                                        bboxcopy[3], bboxcopy[4],\
+                                                        width = 2,\
+                                                        outline = (COLORS[class_idx% len(COLORS)]))
+            self.bboxList.append(bboxcopy)
+            self.bboxIdList.append(bboxcopyId)
+            self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(bboxcopy[0],\
+                                        int(bboxcopy[1]), int(bboxcopy[2]),\
+                                        int(bboxcopy[3]), int(bboxcopy[4])))
+            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[class_idx % len(COLORS)])
 
     def deleteLabel(self, event = None):
-        sel = self.listbox.curselection()
-        if len(sel) != 1:
-            if not len(self.bboxIdList) is 0:
-                self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
-                self.bboxIdList.pop()
-                self.bboxList.pop()
-                self.listbox.delete(len(self.bboxIdList))
-            else:
+        if len(self.bboxList) is 0:
                 return
+        sel = self.listbox.curselection()
+        if len(sel) is 0:
+            self.mainPanel.delete(self.bboxIdList[len(self.bboxIdList)-1])
+            self.listbox.delete(len(self.bboxIdList)-1)
+            self.bboxIdList.pop()
+            self.bboxList.pop()
         else:
-            idx = int(sel[0])
-            self.mainPanel.delete(self.bboxIdList[idx])
-            self.bboxIdList.pop(idx)
-            self.bboxList.pop(idx)
-            self.listbox.delete(idx)
-    
-    # you can set class on keyboard
+            for idx in reversed(list(sel)):
+                self.mainPanel.delete(self.bboxIdList[idx])
+                self.bboxIdList.pop(idx)
+                self.bboxList.pop(idx)
+            key = label[0]
+        elif type(label) is list:
+            return len(self.bboxList)
+        elif type(label) is str:
+            key = label
+        idx = 0
+        try:
+            classes.index(key)
+        except ValueError:
+            print("Warning: doesn't exist {} class".format(key))
+            return len(self.bboxList)
+        try:
+            # Linear Search
+            for bbox in self.bboxList:
+                if classes.index(bbox[0]) > classes.index(key):
+                    break;
+                idx = idx + 1
+        except ValueError:
+            return idx
+        return idx
+
     def setClassKey(self, event):
         self.cla_can_temp
         ek = event.keycode
@@ -419,16 +451,20 @@ class LabelTool():
             return
         try:
             pop_history = self.history.pop()
+            try:
+                class_idx = self.cla_can_temp.index(pop_history[0])
+            except ValueError:
+                class_idx = len(self.cla_can_temp)+len(self.bboxList)
             self.historyId = self.mainPanel.create_rectangle(pop_history[1], pop_history[2],\
                                                             pop_history[3], pop_history[4],\
                                                             width = 2,\
-                                                            outline = (COLORS[len(self.bboxList)% len(COLORS)]))
+                                                            outline = (COLORS[class_idx % len(COLORS)]))
             self.bboxList.append(pop_history)
             self.bboxIdList.append(self.historyId)
             self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(pop_history[0],\
                                    int(pop_history[1]), int(pop_history[2]),\
                                    int(pop_history[3]), int(pop_history[4])))
-            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[class_idx % len(COLORS)])
             self.historyId = None
         except IndexError:
             print ("No item in history!")
