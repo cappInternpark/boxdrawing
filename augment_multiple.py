@@ -80,7 +80,7 @@ class Augment:
     def getImageFileList(self, path):
         '''RETURNS A LIST OF ALL FILES IN /DATA DIR THAT DO NOT END IN .TXT'''
         imageFileList = os.listdir(self.dirDict[path].as_posix())
-        imageFileList = [i for i in imageFileList if i[-3:] != 'txt']
+        imageFileList = [i for i in imageFileList if i[-3:] == 'jpg']
         return imageFileList
     
     def loadImage(self, fileName, path): 
@@ -286,7 +286,7 @@ class Augment:
                     angle = np.random.randint(self.ROTATE_MIN, self.ROTATE_MAX)
                     rot_img, rot_coord = self.rotate(angle, image, labels, sizeHW)
                     filename = file.split('.')[0]
-                    rot_label = open((self.dirDict['augImages'] / (filename+'_aug.txt'))
+                    rot_label = open((self.dirDict['.'] / (filename+'_aug.txt'))
                                  .as_posix(),'w')
                     for i in range(len(classes)):
                         rot_label.write('{} {:.7f} {:.7f} {:.7f} {:.7f} \n'
@@ -296,7 +296,7 @@ class Augment:
                     rot_label.close()
                     
                     # CONVERT IMAGE TO RGB AND SAVE
-                    io.imsave((self.dirDict['augImages'] / (filename+'_aug.jpg'))
+                    io.imsave((self.dirDict['.'] / (filename+'_aug.jpg'))
                               .as_posix(), rot_img[...,::-1], quality=100)
                     
                     if dataSanity =='y':
@@ -324,6 +324,8 @@ class Augment:
         dataTrainList.close()
         print('Created training list for {} files'.format(len(files)))
                         
+
+        
                         
 def add_gaussian_noise(img):
     
@@ -382,6 +384,8 @@ cnt = 0
 if rotmul == 1:
                     print("rotation muliple function is called")
                     dh = Augment()
+                    tempdir=os.getcwd()
+                
                     dh.rotateAugment(path='.')
                         #out_img = output_path + "rotmul_" + img_name
                         #cv2.imwrite(out_img, dst)
